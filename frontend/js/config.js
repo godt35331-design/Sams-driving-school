@@ -11,7 +11,7 @@
    *          'vercel.json' will automatically proxy all '/api' requests to your Render backend!
    * Option B: Paste your Render Web Service URL below (e.g. 'https://sams-backend.onrender.com').
    */
-  const CONFIGURED_RENDER_URL = '';
+  const CONFIGURED_RENDER_URL = 'https://sams-driving-school.onrender.com';
 
   window.RENDER_BACKEND_URL =
     window.RENDER_BACKEND_URL ||
