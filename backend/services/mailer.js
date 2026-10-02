@@ -124,7 +124,7 @@ async function sendCandidateConfirmationEmail(candidate) {
   }
 
   const transporter = createTransporter();
-  const senderEmail = process.env.FROM_EMAIL || 'no-reply@samsdrivingschool.co.uk';
+  const senderEmail = process.env.FROM_EMAIL || 'contact@samsondrivingschool.com';
   const htmlContent = getCandidateConfirmationTemplate(candidate);
 
   const mailOptions = {
@@ -244,7 +244,7 @@ function getCandidateWelcomeCredentialsTemplate({ candidate, rawPassword, tracki
       </div>
 
       <center>
-        <a href="http://localhost:3000/login.html" class="btn-login" target="_blank">
+        <a href="${(process.env.FRONTEND_URL || 'https://samsondrivingschool.com').replace(/\/+$/, '')}/login.html" class="btn-login" target="_blank">
           Sign In to Candidate Portal &rarr;
         </a>
       </center>
@@ -262,11 +262,11 @@ function getCandidateWelcomeCredentialsTemplate({ candidate, rawPassword, tracki
       </div>
 
       <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-        Need assistance or want to confirm test availability directly? Message Mr Sam directly via WhatsApp at <a href="https://wa.me/447700900543" style="color: #059669; font-weight: 600;">+44 7700 900543</a>.
+        Need assistance or want to confirm test availability directly? Message Examiner Sam directly via WhatsApp at <a href="https://wa.me/${process.env.WHATSAPP_NUMBER || '447700900543'}" style="color: #059669; font-weight: 600;">${process.env.PHONE_NUMBER || '+44 7700 900543'}</a> or email <a href="mailto:${process.env.EMAIL || 'contact@samsondrivingschool.com'}" style="color: #059669; font-weight: 600;">${process.env.EMAIL || 'contact@samsondrivingschool.com'}</a>.
       </p>
     </div>
     <div class="email-footer">
-      &copy; 2026 Sam's Driving School UK &bull; Official DVSA ADI Tuition &bull; All Rights Reserved.
+      &copy; 2026 Sam's Driving School UK &bull; Official DVSA ADI Tuition &bull; samsondrivingschool.com &bull; All Rights Reserved.
     </div>
   </div>
 </body>
@@ -283,7 +283,7 @@ async function sendCandidateWelcomeCredentialsEmail({ candidate, rawPassword, tr
 
   const tracking = trackingNumber || candidate.trackingNumber || 'SAM-UK-PENDING';
   const transporter = createTransporter();
-  const senderEmail = process.env.FROM_EMAIL || 'no-reply@samsdrivingschool.co.uk';
+  const senderEmail = process.env.FROM_EMAIL || 'contact@samsondrivingschool.com';
   const htmlContent = getCandidateWelcomeCredentialsTemplate({ candidate, rawPassword, trackingNumber: tracking });
 
   const mailOptions = {
