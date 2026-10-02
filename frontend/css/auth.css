@@ -1,0 +1,849 @@
+/* ==========================================================================
+   mr sam_ DRIVING SCHOOL - LUXURY AUTHENTICATION SYSTEM
+   Soft Darkened Canvas for Frosted Glass Pill Inputs & Buttons
+   ========================================================================== */
+
+:root {
+  --auth-bg: #dfe4ec;
+  --auth-bg-gradient: radial-gradient(ellipse at 50% 20%, #ecf0f8 0%, #dfe5ee 55%, #d4dce7 100%);
+  --auth-glass-pill: rgba(255, 255, 255, 0.65);
+  --auth-glass-pill-hover: rgba(255, 255, 255, 0.9);
+  --auth-glass-border: rgba(255, 255, 255, 0.85);
+  --auth-glass-border-focus: rgba(15, 23, 42, 0.4);
+  --auth-text-bright: #0f172a;
+  --auth-text-placeholder: #64748b;
+  --auth-text-muted: #64748b;
+  --auth-accent-emerald: #059669;
+  --font-clean: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body.auth-body {
+  font-family: var(--font-clean);
+  background: var(--auth-bg);
+  background-image: var(--auth-bg-gradient);
+  background-attachment: fixed;
+  color: var(--auth-text-bright);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+  position: relative;
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient glow */
+.auth-ambient-glow {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(520px, 90vw);
+  height: min(520px, 90vw);
+  max-width: 90vw;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Top Navigation Bar */
+.auth-top-nav {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 100%;
+  padding: 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.auth-brand {
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.auth-brand .underscore {
+  color: #059669;
+}
+
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1.5px solid var(--auth-glass-border);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03), inset 0 1px 1px #ffffff;
+}
+
+.auth-back-link:hover {
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Main Container */
+.auth-card-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+  margin: auto;
+  animation: authFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes authFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Top Progress Dots / Stepper
+   -------------------------------------------------------------------------- */
+.auth-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 48px;
+  width: 100%;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active {
+  border: 1.5px solid rgba(15, 23, 42, 0.7);
+}
+
+.step-indicator .inner-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #0f172a;
+  display: block;
+}
+
+.step-indicator:not(.active) .inner-dot {
+  background-color: rgba(15, 23, 42, 0.25);
+}
+
+.step-line {
+  flex: 1;
+  max-width: 76px;
+  height: 1.5px;
+  background-color: rgba(15, 23, 42, 0.15);
+  transition: background-color 0.3s ease;
+}
+
+.step-line.active {
+  background-color: rgba(15, 23, 42, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Screen Title
+   -------------------------------------------------------------------------- */
+.auth-title {
+  font-family: var(--font-clean);
+  font-size: 1.5rem;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--auth-text-bright);
+  text-align: center;
+  margin-bottom: 38px;
+}
+
+.auth-subtitle {
+  font-size: 0.88rem;
+  color: var(--auth-text-muted);
+  text-align: center;
+  margin-top: -26px;
+  margin-bottom: 34px;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   FROSTED GLASS PILL INPUTS
+   -------------------------------------------------------------------------- */
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.input-pill-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: var(--auth-glass-pill);
+  border: 1.5px solid var(--auth-glass-border);
+  border-radius: 9999px;
+  height: 60px;
+  padding: 0 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 1px #ffffff;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.input-pill-wrap:hover {
+  background: var(--auth-glass-pill-hover);
+  border-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06), inset 0 1px 1px #ffffff;
+}
+
+.input-pill-wrap:focus-within {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--auth-glass-border-focus);
+  box-shadow: 0 0 0 1.5px rgba(15, 23, 42, 0.3), 0 8px 24px rgba(15, 23, 42, 0.08), inset 0 1px 1px #ffffff;
+}
+
+/* Input Icon */
+.input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 16px;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.input-pill-wrap:focus-within .input-icon {
+  color: #0f172a;
+}
+
+/* SVG Line Icon for Name */
+.icon-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 18px;
+}
+
+.icon-bars span {
+  display: block;
+  height: 1.5px;
+  background-color: currentColor;
+  border-radius: 2px;
+}
+
+.icon-bars span:first-child {
+  width: 16px;
+}
+
+.icon-bars span:last-child {
+  width: 11px;
+}
+
+/* Input text */
+.pill-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-clean);
+  font-size: 0.96rem;
+  font-weight: 550;
+  color: var(--auth-text-bright);
+  padding: 0;
+  height: 100%;
+}
+
+.pill-input::placeholder {
+  color: var(--auth-text-placeholder);
+  font-weight: 400;
+}
+
+/* Password Toggle */
+.password-toggle-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #0f172a;
+}
+
+/* --------------------------------------------------------------------------
+   FROSTED GLASS BUTTON "Continue"
+   -------------------------------------------------------------------------- */
+.btn-auth-continue {
+  margin-top: 28px;
+  width: 100%;
+  height: 60px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--auth-glass-border);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+  font-family: var(--font-clean);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08), inset 0 1px 1px #ffffff;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.btn-auth-continue:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14), inset 0 1px 1px #ffffff;
+}
+
+.btn-auth-continue:active {
+  transform: translateY(0);
+}
+
+.btn-auth-continue.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Footer Links */
+.auth-footer {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.auth-footer-link {
+  font-size: 0.84rem;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.auth-footer-link:hover {
+  color: #0f172a;
+}
+
+.auth-switch-text {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.auth-switch-link {
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.auth-switch-link:hover {
+  color: #059669;
+}
+
+/* Toast Container */
+.auth-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.auth-toast {
+  pointer-events: auto;
+  min-width: 290px;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1.5px solid var(--auth-glass-border);
+  border-left: 4px solid #059669;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #0f172a;
+  backdrop-filter: blur(16px);
+}
+
+.auth-toast.error {
+  border-left-color: #ef4444;
+}
+
+.auth-toast h5 {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.auth-toast p {
+  font-size: 0.82rem;
+  color: #475569;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Onboarding Question Groups & Choice Pills
+   -------------------------------------------------------------------------- */
+.auth-question-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.question-label {
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: #0f172a;
+  margin-left: 6px;
+}
+
+.choice-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+@media (min-width: 380px) {
+  .choice-options-grid.grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.choice-card-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--auth-glass-pill);
+  border: 1.5px solid var(--auth-glass-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03), inset 0 1px 1px #ffffff;
+  transition: all 0.2s ease;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.choice-card-label:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: #ffffff;
+}
+
+.choice-card-label input[type="radio"] {
+  accent-color: #059669;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.choice-card-label:has(input[type="radio"]:checked) {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #059669;
+  color: #0f172a;
+  box-shadow: 0 0 0 1.5px #059669, 0 4px 14px rgba(5, 150, 105, 0.12), inset 0 1px 1px #ffffff;
+}
+
+input[type="date"].pill-input {
+  color-scheme: light;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Candidate Welcome Animation Screen & Loading Streamline
+   ========================================================================== */
+.welcome-launch-card {
+  max-width: 500px !important;
+  text-align: center;
+  padding: 40px 32px;
+  animation: welcomeCardFadeIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-launch-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0284c7, #10b981, #0284c7);
+  background-size: 200% 100%;
+  animation: streamlineBorderPulse 3s linear infinite;
+}
+
+@keyframes streamlineBorderPulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.welcome-launch-card.fading-out {
+  animation: welcomeCardFadeOut 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes welcomeCardFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes welcomeCardFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.03) translateY(-16px);
+    filter: blur(6px);
+  }
+}
+
+.welcome-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+
+.welcome-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px rgba(16, 185, 129, 0.9); }
+}
+
+.welcome-title-wrap {
+  margin-bottom: 24px;
+}
+
+.welcome-animated-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+
+.welcome-word {
+  color: #0f172a;
+}
+
+.welcome-user-var {
+  display: inline-block;
+  background: linear-gradient(135deg, #0284c7 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 850;
+  position: relative;
+}
+
+.welcome-animated-sub {
+  font-size: 0.88rem;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.welcome-details-preview {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 1px #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.preview-label {
+  color: #64748b;
+  font-weight: 600;
+}
+
+.preview-val {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.preview-val.font-mono {
+  font-family: monospace;
+  color: #059669;
+}
+
+.preview-val.text-emerald {
+  color: #059669;
+}
+
+.preview-val.text-blue {
+  color: #0284c7;
+}
+
+.streamline-section {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.streamline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.streamline-status-text {
+  color: #0284c7;
+  letter-spacing: 0.01em;
+  transition: all 0.2s ease;
+}
+
+.streamline-percentage {
+  color: #059669;
+  font-family: monospace;
+  font-size: 0.88rem;
+}
+
+.streamline-track {
+  width: 100%;
+  height: 9px;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.streamline-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #0284c7 0%, #10b981 60%, #38bdf8 100%);
+  transition: width 0.15s ease-out;
+  position: relative;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+.streamline-glow-head {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: #ffffff;
+  opacity: 0.8;
+  filter: blur(2px);
+}
+
+.welcome-footer-note {
+  font-size: 0.76rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Mobile & Phone View Responsiveness (320px - 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  body.auth-body {
+    padding: 70px 14px 24px;
+    justify-content: flex-start;
+  }
+
+  .auth-top-nav {
+    top: 14px;
+    padding: 0 14px;
+  }
+
+  .auth-brand {
+    font-size: 1.15rem;
+  }
+
+  .auth-back-link {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+  }
+
+  .auth-card-container {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+
+  .auth-title {
+    font-size: 1.4rem;
+  }
+
+  .welcome-launch-card {
+    padding: 26px 16px !important;
+  }
+
+  .welcome-animated-title {
+    font-size: 1.45rem;
+  }
+
+  .welcome-details-preview {
+    padding: 12px 14px;
+    margin-bottom: 18px;
+  }
+
+  .streamline-section {
+    margin-bottom: 16px;
+  }
+
+  .auth-toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 16px;
+  }
+
+  .auth-toast {
+    font-size: 0.8rem;
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.auth-body {
+    padding: 65px 10px 20px;
+  }
+
+  .welcome-animated-title {
+    font-size: 1.3rem;
+  }
+
+  .welcome-launch-card {
+    padding: 20px 12px !important;
+  }
+}
+
+

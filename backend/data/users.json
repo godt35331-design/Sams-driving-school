@@ -1,0 +1,30 @@
+[
+  {
+    "id": "user-1790552212330",
+    "name": "David Adeleke",
+    "email": "david.adeleke@example.com",
+    "dob": "1998-05-14",
+    "licenceLast4": "7192",
+    "theoryStatus": "passed",
+    "theoryPassed": true,
+    "practicalHistory": "first_time",
+    "role": "learner",
+    "updatedAt": "2026-09-27T23:36:52.330Z"
+  },
+  {
+    "id": "user-1790544580771",
+    "name": "EMILE FANG MBAH",
+    "email": "mbahemile35@gmail.com",
+    "password": "Banghaemile12",
+    "role": "learner",
+    "createdAt": "2026-09-27T21:29:40.771Z"
+  },
+  {
+    "id": "user-1790540265783",
+    "name": "Alex Morgan",
+    "email": "alex.test@example.com",
+    "password": "password123",
+    "role": "learner",
+    "createdAt": "2026-09-27T20:17:45.783Z"
+  }
+]

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Learner Portal | Sam's Driving School UK</title>
+  
+  <!-- Architectural & Display Google Fonts (Matches Landing Page) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main & Dashboard Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="dashboard-body">
+
+  <!-- Main Navigation Header -->
+  <header class="dash-header">
+    <div class="dash-container dash-header-inner">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="dash-brand">
+        sam's<span class="underscore">_</span>
+        <span class="dash-brand-tag">Learner Portal</span>
+      </a>
+
+      <!-- Navigation & User Profile -->
+      <nav class="dash-nav">
+        <a href="#tracker" class="dash-nav-link active">Progress Tracker</a>
+        <a href="#lessons" class="dash-nav-link">Lessons</a>
+        
+        <!-- User Avatar Pill -->
+        <div class="dash-user-pill">
+          <div class="dash-avatar-circle" id="dashUserAvatar">L</div>
+          <span class="dash-username" id="dashUserName">Learner</span>
+        </div>
+
+        <!-- Sign Out Button -->
+        <button id="signOutBtn" class="btn-signout" title="Sign out of portal">Sign Out</button>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- 1. CANDIDATE PROFILE & INTAKE RECORD BOX (Complete User Information) -->
+  <section class="dash-candidate-section" id="candidateProfileSection">
+    <div class="dash-container">
+      <div class="candidate-profile-box" id="candidateProfileBox">
+        
+        <!-- Profile Header -->
+        <div class="profile-box-header">
+          <div class="profile-box-title-group">
+            <div class="profile-badge-strip">
+              <span class="profile-status-badge" id="profileStatusBadge">Active Candidate</span>
+              <span class="profile-verified-badge">✓ Official DVSA Registration</span>
+            </div>
+            <h3 class="profile-box-title" id="profileBoxName">Candidate Information Record</h3>
+            <p class="profile-box-sub">Your official registration details, enrolled course package, and assigned DVSA test centre</p>
+          </div>
+          <div class="profile-tracking-chip" onclick="copyCandidateTrackingNumber()" title="Click to copy tracking number">
+            <span class="tracking-chip-label">OFFICIAL CASE TRACKING NUMBER</span>
+            <span class="tracking-chip-num"><span id="dashTrackingDisplay">SAM-UK-849201</span> 📋</span>
+          </div>
+        </div>
+
+        <!-- Information Grid -->
+        <div class="candidate-info-grid">
+          
+          <!-- Legal Name -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">👤 Full Legal Name</div>
+            <div class="info-item-val" id="infoCandidateName">Loading...</div>
+          </div>
+
+          <!-- Email -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">✉️ Email Address</div>
+            <div class="info-item-val" id="infoCandidateEmail">Loading...</div>
+          </div>
+
+          <!-- Phone -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">📞 Phone / WhatsApp</div>
+            <div class="info-item-val" id="infoCandidatePhone">Loading...</div>
+          </div>
+
+          <!-- Date of Birth -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">🎂 Date of Birth</div>
+            <div class="info-item-val" id="infoCandidateDob">Loading...</div>
+          </div>
+
+          <!-- Pickup Address -->
+          <div class="candidate-info-item item-span-2">
+            <div class="info-item-label">📍 Pickup &amp; Residential Address</div>
+            <div class="info-item-val" id="infoCandidateAddress">Loading...</div>
+          </div>
+
+          <!-- UK Provisional Licence -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">🪪 UK Provisional Licence</div>
+            <div class="info-item-val font-mono">Last 4: <strong id="licenceDisplay">8492</strong></div>
+          </div>
+
+          <!-- Transmission Preference -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">⚙️ Transmission Type</div>
+            <div class="info-item-val" id="dashTransmissionDisplay">Automatic (2-Pedal)</div>
+          </div>
+
+          <!-- Course Package Enrolled -->
+          <div class="candidate-info-item highlight-package">
+            <div class="info-item-label">📦 Enrolled Course Package</div>
+            <div class="info-item-val text-primary" id="infoCandidatePackage">10-Hour Starter Block (£350)</div>
+          </div>
+
+          <!-- Assigned Test Centre -->
+          <div class="candidate-info-item highlight-centre">
+            <div class="info-item-label">🏢 Assigned DVSA Test Centre</div>
+            <div class="info-item-val text-emerald" id="infoCandidateTestCentre">Birmingham (South Yardley)</div>
+          </div>
+
+          <!-- Target Practical Test Date -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">🎯 Target Test Date</div>
+            <div class="info-item-val" id="infoCandidateTargetDate">Pending / To Be Scheduled</div>
+          </div>
+
+          <!-- Driving Experience Level -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">🔰 Experience History</div>
+            <div class="info-item-val" id="infoCandidateExperience">Complete Beginner</div>
+          </div>
+
+          <!-- Theory Test Status -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">📑 Theory Test Status</div>
+            <div class="info-item-val" id="infoCandidateTheory">⏳ In Preparation</div>
+          </div>
+
+          <!-- Primary Instructor -->
+          <div class="candidate-info-item">
+            <div class="info-item-label">🚘 Primary ADI Instructor</div>
+            <div class="info-item-val" id="infoCandidateInstructor">Mr Sam (DVSA Grade A ADI)</div>
+          </div>
+
+        </div>
+
+        <!-- Instructor Guidance Notes -->
+        <div class="profile-box-footer" id="profileNotesWrap" style="display: none;">
+          <div class="profile-notes-label">📝 Examiner Guidance &amp; Route Notes:</div>
+          <div class="profile-notes-content" id="infoCandidateNotes"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. THE TRACKING BAR (Main Hero Feature - Arranged Cleanly) -->
+  <section class="tracker-section" id="tracker">
+    <div class="dash-container">
+      <div class="tracker-card">
+        
+        <div class="tracker-header">
+          <div class="tracker-title-wrap">
+            <span class="welcome-eyebrow">STEP-BY-STEP WORKFLOW</span>
+            <h3>Progress Tracker</h3>
+            <p>Track your current process from initial application to official confirmation mail.</p>
+          </div>
+          <div class="tracker-header-actions">
+            <div class="tracker-stat-pill">
+              <span class="stat-label">STATUS:</span>
+              <span class="stat-value" id="masterPercentText">50% Complete</span>
+            </div>
+            <!-- Contact Examiner Buttons (WhatsApp & Email Options) -->
+            <a href="#" target="_blank" class="btn-dash-primary btn-contact-examiner btn-examiner-wa">
+              <span>💬</span> WhatsApp Examiner
+            </a>
+            <a href="#lessons" class="btn-dash-outline">
+              View Skills Matrix
+            </a>
+          </div>
+        </div>
+
+        <!-- Master Continuous Progress Bar -->
+        <div class="master-progress-track">
+          <div class="master-progress-fill" id="masterProgressFill"></div>
+        </div>
+
+        <!-- 5 Level Stepping Cards Grid -->
+        <div class="levels-grid" id="levelsGrid">
+          <!-- Dynamically populated via dashboard.js -->
+        </div>
+
+        <!-- Active Selected Level Criteria Drawer -->
+        <div id="levelCriteriaWrap">
+          <!-- Dynamically populated via dashboard.js -->
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Next Lesson, Skills Competency & Instructor Notes Grid -->
+  <main class="dash-container dash-content-grid" id="lessons">
+    
+    <!-- Left Column: Next Scheduled Session & Skills Matrix -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- Card: Next Lesson Spotlight -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Next Driving Lesson</h2>
+          <span class="util-badge">CONFIRMED SLOT</span>
+        </div>
+
+        <div class="lesson-spotlight">
+          <div class="lesson-meta-grid">
+            <div class="lesson-meta-item">
+              <span class="meta-label">DATE &amp; TIME</span>
+              <span class="meta-val">Thursday, 10:00 AM</span>
+            </div>
+            <div class="lesson-meta-item">
+              <span class="meta-label">DURATION</span>
+              <span class="meta-val">2 Hours (Dual Control)</span>
+            </div>
+            <div class="lesson-meta-item">
+              <span class="meta-label">PICKUP POSTCODE</span>
+              <span class="meta-val">NW4 (Hendon / Mill Hill)</span>
+            </div>
+            <div class="lesson-meta-item">
+              <span class="meta-label">INSTRUCTOR</span>
+              <span class="meta-val">Mr Sam (ADI Grade A)</span>
+            </div>
+          </div>
+
+          <div class="lesson-focus-badge">
+            <span>🎯</span>
+            <div>
+              <strong>Target Lesson Objective:</strong> Approaching mini-roundabouts and Level 2 clutch biting control on incline restarts.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <a href="https://wa.me/447700900543?text=Hello%20Examiner,%20regarding%20my%20lesson%20and%20test%20schedule" target="_blank" class="btn-dash-primary btn-contact-examiner" style="font-size: 0.82rem; padding: 10px 20px;">
+            <span>💬</span> Contact Examiner
+          </a>
+        </div>
+      </div>
+
+      <!-- Card: Core DVSA Driving Competencies Radar -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Core Driving Competency Meter</h2>
+          <span style="font-size: 0.78rem; color: var(--dash-text-muted);">Updated by Instructor</span>
+        </div>
+
+        <div class="skill-row">
+          <div class="skill-info">
+            <span>Cockpit Drill &amp; Pre-Drive Safety Checks</span>
+            <span class="skill-percent">95% (Mastered)</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" style="width: 95%;"></div>
+          </div>
+        </div>
+
+        <div class="skill-row">
+          <div class="skill-info">
+            <span>Moving Off, Stopping &amp; Clutch Biting Point</span>
+            <span class="skill-percent">80% (Proficient)</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" style="width: 80%;"></div>
+          </div>
+        </div>
+
+        <div class="skill-row">
+          <div class="skill-info">
+            <span>Junctions &amp; Roundabouts (MSPSL Routine)</span>
+            <span class="skill-percent">55% (Developing)</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" style="width: 55%; background: #38bdf8;"></div>
+          </div>
+        </div>
+
+        <div class="skill-row">
+          <div class="skill-info">
+            <span>Manoeuvres (Parallel &amp; Bay Parking)</span>
+            <span class="skill-percent">35% (Early Stage)</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" style="width: 35%; background: #fbbf24;"></div>
+          </div>
+        </div>
+
+        <div class="skill-row">
+          <div class="skill-info">
+            <span>Mock Test Readiness &amp; Highway Code Application</span>
+            <span class="skill-percent">50% (On Track)</span>
+          </div>
+          <div class="skill-bar">
+            <div class="skill-bar-fill" style="width: 50%; background: #a855f7;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Instructor Notes & Quick Study Resources -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- Card: Instructor Debrief Note -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Instructor Debrief Note</h2>
+          <span style="font-size: 0.76rem; color: #34d399;">Latest Session</span>
+        </div>
+
+        <div class="instructor-debrief">
+          <div class="debrief-author">
+            <div class="debrief-author-avatar">S</div>
+            <div>
+              <div class="debrief-name">Mr Sam (ADI Grade A)</div>
+              <div class="debrief-date">Last Lesson Debrief</div>
+            </div>
+          </div>
+          <p class="debrief-quote">
+            "Solid progress today on hill starts and clutch control. Your road positioning on suburban streets is calm and consistent. For next session, make sure to check your left mirror before signalling when pulling up on the left."
+          </p>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; color: var(--dash-text-muted);">
+          <span>Total Logged Hours: <strong>14 hrs</strong></span>
+          <span>Target Test Date: <strong>November 2026</strong></span>
+        </div>
+      </div>
+
+      <!-- Card: Tuition Fee & Installment Plan -->
+      <div class="dash-card" id="installmentPlanCard">
+        <div class="dash-card-header">
+          <div>
+            <h2 class="dash-card-title">Tuition Fee &amp; Installment Plan</h2>
+            <span style="font-size: 0.74rem; color: var(--dash-text-muted);">Admin-Assigned Payment Schedule</span>
+          </div>
+          <span class="util-badge" id="dashPlanStatusBadge" style="background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3);">3-STAGE PLAN</span>
+        </div>
+
+        <!-- Payment Progress Bar -->
+        <div style="margin: 16px 0 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
+            <span style="color: var(--dash-text-muted);">Cleared Tuition Balance:</span>
+            <strong id="dashPaymentProgressText" style="color: var(--dash-text-primary);">£0.00 of £350.00 (0%)</strong>
+          </div>
+          <div style="background: rgba(0, 0, 0, 0.08); border-radius: 9999px; height: 8px; overflow: hidden;">
+            <div id="dashPaymentProgressFill" style="background: linear-gradient(90deg, #10b981, #0284c7); height: 100%; width: 0%; border-radius: 9999px; transition: width 0.4s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Dynamic Installment Parts List -->
+        <div id="dashInstallmentsContainer" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+          <!-- Dynamically populated via dashboard.js -->
+        </div>
+
+        <div style="margin-top: 16px; padding: 10px 14px; background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.18); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+          <small style="color: var(--dash-text-secondary); font-size: 0.76rem;">
+            💡 Remaining installment balances can be settled via bank transfer or directly with your examiner during practical sessions.
+          </small>
+          <a href="https://wa.me/447700900543?text=Hi%20Sam,%20I%20would%20like%20to%20make%20an%20installment%20payment%20for%20my%20driving%20lessons" target="_blank" class="btn-dash-outline" style="font-size: 0.75rem; padding: 6px 12px; white-space: nowrap;">
+            💳 Pay / Query
+          </a>
+        </div>
+      </div>
+
+      <!-- Card: Quick Learning & Study Actions -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h2 class="dash-card-title">Learner Resources</h2>
+        </div>
+
+        <div class="quick-tools-grid">
+          <a href="index.html#what-we-do" class="tool-card">
+            <span class="tool-icon">📚</span>
+            <div class="tool-title">Theory Test Prep</div>
+            <div class="tool-desc">Hazard perception &amp; road sign mock quizzes</div>
+          </a>
+          <a href="index.html#booking" class="tool-card">
+            <span class="tool-icon">📅</span>
+            <div class="tool-title">Book Top-Up Block</div>
+            <div class="tool-desc">10-hour or 20-hour starter lesson blocks</div>
+          </a>
+          <a href="https://www.tiktok.com/@tundesam.drivingschool?_r=1&_t=ZS-9A5y4BBb3ea" target="_blank" class="tool-card">
+            <span class="tool-icon">🎬</span>
+            <div class="tool-title">TikTok Tutorials</div>
+            <div class="tool-desc">Watch test route breakdowns &amp; clips by @tundesam.drivingschool</div>
+          </a>
+          <a href="https://wa.me/447700900543" target="_blank" class="tool-card">
+            <span class="tool-icon">💬</span>
+            <div class="tool-title">Ask Sam</div>
+            <div class="tool-desc">Direct WhatsApp question about tricky junctions</div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="dash-footer">
+    <div class="dash-container">
+      &copy; 2026 Sam's Driving School UK &bull; DVSA Grade A Approved Driving Instructor (ADI) &bull; Student Portal
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+[
+  {
+    "id": "single-lesson",
+    "title": "Pay-As-You-Go Lesson",
+    "badge": "Flexible",
+    "transmission": "Both",
+    "duration": "2 Hours per session",
+    "price": 75,
+    "priceFormatted": "£75",
+    "priceUnit": "/ 2-hr session",
+    "features": [
+      "1-to-1 DVSA Approved Tuition",
+      "Dual-controlled modern vehicle",
+      "Door-to-door pick up & drop off",
+      "Personalized digital progress log",
+      "Pay per lesson flexibility"
+    ],
+    "popular": false
+  },
+  {
+    "id": "block-10",
+    "title": "10-Hour Starter Block",
+    "badge": "Most Popular",
+    "transmission": "Both",
+    "duration": "10 Hours total (5 x 2-hr sessions)",
+    "price": 350,
+    "priceFormatted": "£350",
+    "priceUnit": "save £25",
+    "features": [
+      "Save £25 vs single lessons",
+      "Full beginners curriculum",
+      "Cockpit drill & basic controls",
+      "Roundabouts & junctions mastery",
+      "Free Highway Code guide included",
+      "Flexible schedule booking"
+    ],
+    "popular": true
+  },
+  {
+    "id": "block-20",
+    "title": "20-Hour Confidence Block",
+    "badge": "Best Value",
+    "transmission": "Both",
+    "duration": "20 Hours total (10 x 2-hr sessions)",
+    "price": 680,
+    "priceFormatted": "£680",
+    "priceUnit": "save £70",
+    "features": [
+      "Save £70 vs single rate",
+      "Manoeuvres (parallel, bay, turn)",
+      "Independent driving & sat nav practice",
+      "Dual carriageway experience",
+      "Official DVSA mock driving test",
+      "Guaranteed test car hire discount"
+    ],
+    "popular": false
+  },
+  {
+    "id": "intensive-crash",
+    "title": "Fast-Track Intensive Course",
+    "badge": "Pass in 1-2 Weeks",
+    "transmission": "Both",
+    "duration": "30 Hours intensive coaching",
+    "price": 1050,
+    "priceFormatted": "£1,050",
+    "priceUnit": "complete package",
+    "features": [
+      "Fast-track to practical test readiness",
+      "Daily structured multi-hour sessions",
+      "2 Official DVSA format mock tests",
+      "Test day car rental included",
+      "Priority schedule slots with Mr Sam",
+      "High first-time pass rate"
+    ],
+    "popular": false
+  },
+  {
+    "id": "pass-plus",
+    "title": "Pass Plus & Motorway Module",
+    "badge": "Insurance Discount",
+    "transmission": "Both",
+    "duration": "6 Hours post-pass training",
+    "price": 240,
+    "priceFormatted": "£240",
+    "priceUnit": "certified course",
+    "features": [
+      "Motorway, rural & night driving",
+      "All-weather driving tactics",
+      "Official Pass Plus certificate",
+      "Save up to 30% on car insurance",
+      "No final test required"
+    ],
+    "popular": false
+  },
+  {
+    "id": "mock-test",
+    "title": "DVSA Mock Test & Assessment",
+    "badge": "Test Ready",
+    "transmission": "Both",
+    "duration": "2 Hours (40m test + debrief)",
+    "price": 80,
+    "priceFormatted": "£80",
+    "priceUnit": "per assessment",
+    "features": [
+      "Strict DVSA test route simulation",
+      "Independent drive with sat nav/signs",
+      "Detailed examiner marking sheet",
+      "Fault breakdown & remedial coaching",
+      "Ideal before your official test"
+    ],
+    "popular": false
+  }
+]

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Welcome Candidate | Sam's Driving School UK</title>
+  
+  <!-- Architectural & Display Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Authentication & Onboarding Stylesheet -->
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-body">
+
+  <!-- Ambient Backdrop Glow -->
+  <div class="auth-ambient-glow"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="auth-top-nav">
+    <a href="index.html" class="auth-brand" aria-label="Return home">
+      sam's<span class="underscore">_</span> <span style="font-size: 0.65em; font-weight: 700; opacity: 0.85;">UK</span>
+    </a>
+    <a href="dashboard.html" class="auth-back-link">
+      Skip to Portal &rarr;
+    </a>
+  </header>
+
+  <!-- Centered Welcome Launch Card -->
+  <main class="auth-card-container welcome-launch-card" id="welcomeCardContainer">
+    
+    <!-- Top Status Chip -->
+    <div class="welcome-chip-badge">
+      <span class="welcome-chip-dot"></span>
+      <span>Official DVSA Candidate Portal</span>
+    </div>
+
+    <!-- Animated Greeting Title with User Name Variable -->
+    <div class="welcome-title-wrap">
+      <h1 class="welcome-animated-title">
+        <span class="welcome-word">Welcome,</span>
+        <span class="welcome-user-var" id="welcomeUserName">Candidate</span>!
+      </h1>
+      <p class="welcome-animated-sub" id="welcomeSubText">
+        Your registration details have been verified by your instructor. Preparing your personal driving dashboard...
+      </p>
+    </div>
+
+    <!-- Candidate Quick Verification Card (Pre-populated by Admin Registration) -->
+    <div class="welcome-details-preview" id="welcomeDetailsCard">
+      <div class="preview-row">
+        <span class="preview-label">Case Tracking #:</span>
+        <strong class="preview-val font-mono" id="previewTracking">SAM-UK-849201</strong>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">Assigned DVSA Test Centre:</span>
+        <strong class="preview-val text-emerald" id="previewTestCentre">Birmingham (South Yardley)</strong>
+      </div>
+      <div class="preview-row">
+        <span class="preview-label">Enrolled Course Package:</span>
+        <strong class="preview-val text-blue" id="previewPackage">10-Hour Starter Block (£350)</strong>
+      </div>
+    </div>
+
+    <!-- Loading Streamline Section -->
+    <div class="streamline-section">
+      <div class="streamline-header">
+        <span class="streamline-status-text" id="streamlineStatus">Verifying candidate credentials...</span>
+        <span class="streamline-percentage" id="streamlinePercent">0%</span>
+      </div>
+      
+      <!-- Continuous Glowing Streamline Track -->
+      <div class="streamline-track">
+        <div class="streamline-fill" id="streamlineFill">
+          <div class="streamline-glow-head"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subtext Note -->
+    <div class="welcome-footer-note">
+      <span style="color: #059669;">⚡</span>
+      <span id="welcomeNoteText">Loading candidate profile and syllabus in the background...</span>
+    </div>
+
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/onboarding.js"></script>
+</body>
+</html>

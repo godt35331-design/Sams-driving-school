@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sams-driving-school-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        sync: false
+      - key: INSTRUCTOR_NAME
+        value: "Sam"
+      - key: PHONE_NUMBER
+        value: "+44 7700 900543"
+      - key: WHATSAPP_NUMBER
+        value: "447700900543"
+      - key: EMAIL
+        value: "contact@samsdrivingschool.co.uk"

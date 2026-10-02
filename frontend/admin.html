@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Master Admin Control Center | Sam's Driving School UK</title>
+  
+  <!-- Security Guard: Block direct link access if not authenticated as admin -->
+  <script>
+    (function() {
+      try {
+        const token = localStorage.getItem('mrsam_token');
+        const rawUser = localStorage.getItem('mrsam_user');
+        if (!token || !rawUser) {
+          window.location.replace('login.html?redirect=admin&error=unauthorized');
+          return;
+        }
+        const user = JSON.parse(rawUser);
+        if (user.role !== 'admin') {
+          window.location.replace('login.html?redirect=admin&error=unauthorized');
+          return;
+        }
+      } catch (e) {
+        window.location.replace('login.html?redirect=admin&error=unauthorized');
+      }
+    })();
+  </script>
+
+  <!-- Architectural Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Admin Header Micro-Bar -->
+  <div class="admin-topbar">
+    <div class="admin-container topbar-inner">
+      <div class="topbar-left">
+        <span class="admin-shield-badge">🛡️ MASTER EXAMINER CONTROL</span>
+        <span class="admin-db-status">
+          <span class="db-dot"></span> MongoDB Atlas Live
+        </span>
+      </div>
+      <div class="topbar-right">
+        <a href="dashboard.html" class="topbar-link" target="_blank">View Learner Portal &rarr;</a>
+        <a href="index.html" class="topbar-link" target="_blank">View Public Website &rarr;</a>
+        <button id="adminSignOutBtn" class="btn-topbar-logout">Sign Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="admin-nav-header">
+    <div class="admin-container admin-nav-inner">
+      <div class="admin-brand">
+        <a href="index.html" class="admin-logo">sam's<span class="logo-underscore">_</span> <span style="font-size: 0.65em; font-weight: 700; opacity: 0.85;">UK</span></a>
+        <span class="admin-badge-pill">Examiner Console</span>
+      </div>
+
+      <nav class="admin-tabs-nav">
+        <button class="admin-tab-btn active" data-tab="tab-overview">
+          <span class="tab-icon">📊</span> Overview
+        </button>
+        <button class="admin-tab-btn" data-tab="tab-learners">
+          <span class="tab-icon">👥</span> Candidates (<span id="tabCountLearners">0</span>)
+        </button>
+        <button class="admin-tab-btn" data-tab="tab-bookings">
+          <span class="tab-icon">📅</span> Bookings (<span id="tabCountBookings">0</span>)
+        </button>
+        <button class="admin-tab-btn" data-tab="tab-courses">
+          <span class="tab-icon">📚</span> Courses &amp; Pricing
+        </button>
+        <button class="admin-tab-btn" data-tab="tab-reviews">
+          <span class="tab-icon">⭐</span> Student Reviews
+        </button>
+      </nav>
+
+      <div class="admin-user-info">
+        <div class="admin-avatar">AD</div>
+        <div class="admin-details">
+          <strong id="adminNameDisplay">Mr Sam</strong>
+          <small>Chief Examiner / Admin</small>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Admin Content Area -->
+  <main class="admin-main">
+    <div class="admin-container">
+
+      <!-- ============================================================
+           TAB 1: OVERVIEW & SYSTEM METRICS
+           ============================================================ -->
+      <section id="tab-overview" class="admin-tab-pane active">
+        
+        <div class="pane-header">
+          <div>
+            <span class="pane-eyebrow">COMMAND CENTER INTELLIGENCE</span>
+            <h2>Platform Operations Overview</h2>
+            <p>Real-time analytics for candidate intake, lesson bookings, test stages, and tuition curriculum.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-action-sm" onclick="openCreateLearnerModal()" style="background: var(--admin-emerald); color: #000; font-weight: 700;">
+              <span>+</span> Add Candidate
+            </button>
+            <button class="btn-admin-refresh" id="btnRefreshStats">
+              <span>🔄</span> Sync Data
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Stat Summary Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrap bg-emerald">👥</div>
+            <div class="stat-info">
+              <span class="stat-num" id="statTotalLearners">--</span>
+              <span class="stat-title">Registered Candidates</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap bg-blue">✅</div>
+            <div class="stat-info">
+              <span class="stat-num" id="statPassRate">92%</span>
+              <span class="stat-title">First-Time Pass Rate</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap bg-purple">📅</div>
+            <div class="stat-info">
+              <span class="stat-num" id="statTotalBookings">--</span>
+              <span class="stat-title">Lesson Bookings</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrap bg-amber">💷</div>
+            <div class="stat-info">
+              <span class="stat-num" id="statRevenue">£0</span>
+              <span class="stat-title">Confirmed Tuition Pipeline</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-Step Pipeline Stage Breakdown -->
+        <div class="pipeline-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 class="card-heading">4-Step Candidate Pipeline Status</h3>
+              <p class="card-sub">Active learner distribution across the structured DVSA tuition workflow.</p>
+            </div>
+            <span class="badge-status active">Live Pipeline</span>
+          </div>
+          
+          <div class="pipeline-grid">
+            <div class="pipeline-step-box" onclick="filterByStepFromOverview(1)" style="cursor: pointer;" title="Click to view Step 1 Candidates">
+              <div class="step-badge">Step 1</div>
+              <h4>Application &amp; Intake</h4>
+              <span class="step-count" id="countStep1">0 Learners</span>
+              <p>Personal details, provisional licence last 4 digits verification</p>
+            </div>
+            <div class="pipeline-step-box" onclick="filterByStepFromOverview(2)" style="cursor: pointer;" title="Click to view Step 2 Candidates">
+              <div class="step-badge">Step 2</div>
+              <h4>Theory Test Prep</h4>
+              <span class="step-count" id="countStep2">0 Learners</span>
+              <p>Highway Code, hazard perception coaching &amp; mock test</p>
+            </div>
+            <div class="pipeline-step-box" onclick="filterByStepFromOverview(3)" style="cursor: pointer;" title="Click to view Step 3 Candidates">
+              <div class="step-badge">Step 3</div>
+              <h4>Practical Driving Test</h4>
+              <span class="step-count" id="countStep3">0 Learners</span>
+              <p>Dual-control tuition, test route simulation &amp; examiner drive</p>
+            </div>
+            <div class="pipeline-step-box" onclick="filterByStepFromOverview(4)" style="cursor: pointer;" title="Click to view Step 4 Candidates">
+              <div class="step-badge">Step 4</div>
+              <h4>Confirmation Mail</h4>
+              <span class="step-count" id="countStep4">0 Learners</span>
+              <p>Final examination clearance &amp; pass confirmation dispatch</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================
+           TAB 2: LEARNERS & CANDIDATES MANAGEMENT
+           ============================================================ -->
+      <section id="tab-learners" class="admin-tab-pane">
+        
+        <div class="pane-header">
+          <div>
+            <span class="pane-eyebrow">CANDIDATE DATABASE &amp; PROGRESSION</span>
+            <h2>Learners &amp; Candidate Control</h2>
+            <p>Manage candidate stages (1–4), update theory/practical status, log instructor notes, trigger confirmation emails, or impersonate learner portal.</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-action-sm" onclick="openCreateLearnerModal()" style="background: var(--admin-emerald); color: #000; font-weight: 700; padding: 8px 16px;">
+              <span>+</span> New Candidate
+            </button>
+            <div class="search-input-pill">
+              <span>🔍</span>
+              <input type="text" id="learnerSearchInput" placeholder="Search by name, email, phone, postcode...">
+            </div>
+            <select id="learnerStepFilter" class="admin-select">
+              <option value="">All Steps (1-4)</option>
+              <option value="1">Step 1: Application</option>
+              <option value="2">Step 2: Theory Prep</option>
+              <option value="3">Step 3: Practical Tuition</option>
+              <option value="4">Step 4: Confirmation</option>
+            </select>
+            <select id="learnerTransFilter" class="admin-select">
+              <option value="">All Transmissions</option>
+              <option value="automatic">Automatic</option>
+              <option value="manual">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Learners Data Table -->
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="admin-table" id="learnersTable">
+              <thead>
+                <tr>
+                  <th>Candidate &amp; Contact</th>
+                  <th>Case Tracking #</th>
+                  <th>Current Process Stage</th>
+                  <th>Payment Plan (Installments)</th>
+                  <th>Vehicle</th>
+                  <th>Theory Status</th>
+                  <th>Account</th>
+                  <th style="min-width: 220px;">Control Actions</th>
+                </tr>
+              </thead>
+              <tbody id="learnersTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4">Loading candidate records from MongoDB Atlas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================
+           TAB 3: BOOKINGS MANAGEMENT
+           ============================================================ -->
+      <section id="tab-bookings" class="admin-tab-pane">
+        
+        <div class="pane-header">
+          <div>
+            <span class="pane-eyebrow">LESSONS &amp; SCHEDULE</span>
+            <h2>Lesson &amp; Course Bookings</h2>
+            <p>Review customer booking submissions, assign instructors, update prices, and change booking status.</p>
+          </div>
+          <div class="pane-actions">
+            <button class="btn-action-sm" onclick="openCreateBookingModal()" style="background: var(--admin-emerald); color: #000; font-weight: 700; padding: 8px 16px;">
+              <span>+</span> New Booking
+            </button>
+            <div class="search-input-pill">
+              <span>🔍</span>
+              <input type="text" id="bookingSearchInput" placeholder="Search candidate, course, postcode...">
+            </div>
+            <select id="bookingStatusFilter" class="admin-select">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="admin-table" id="bookingsTable">
+              <thead>
+                <tr>
+                  <th>Candidate &amp; Contact</th>
+                  <th>Course Package</th>
+                  <th>Vehicle</th>
+                  <th>Preferred Timing</th>
+                  <th>Postcode</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsTableBody">
+                <tr>
+                  <td colspan="8" class="text-center py-4">Loading bookings from MongoDB Atlas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================
+           TAB 4: COURSES & PRICING
+           ============================================================ -->
+      <section id="tab-courses" class="admin-tab-pane">
+        
+        <div class="pane-header">
+          <div>
+            <span class="pane-eyebrow">CURRICULUM &amp; PRICING CONTROL</span>
+            <h2>Driving Courses &amp; Packages</h2>
+            <p>Create, update, or remove lesson packages, rates, durations, and curriculum bullet points.</p>
+          </div>
+          <button class="btn-action-sm" onclick="openCreateCourseModal()" style="background: var(--admin-emerald); color: #000; font-weight: 700; padding: 8px 16px;">
+            <span>+</span> Add Course Package
+          </button>
+        </div>
+
+        <div class="courses-admin-grid" id="coursesAdminGrid">
+          <!-- Populated via admin.js -->
+        </div>
+
+      </section>
+
+      <!-- ============================================================
+           TAB 5: REVIEWS & TESTIMONIALS
+           ============================================================ -->
+      <section id="tab-reviews" class="admin-tab-pane">
+        
+        <div class="pane-header">
+          <div>
+            <span class="pane-eyebrow">TESTIMONIALS &amp; PASSES</span>
+            <h2>Student Reviews &amp; Passes</h2>
+            <p>Manage verified student reviews, test centres, and first-time pass stories.</p>
+          </div>
+          <button class="btn-action-sm" onclick="openCreateReviewModal()" style="background: var(--admin-emerald); color: #000; font-weight: 700; padding: 8px 16px;">
+            <span>+</span> Add Student Review
+          </button>
+        </div>
+
+        <div class="reviews-admin-grid" id="reviewsAdminGrid">
+          <!-- Populated via admin.js -->
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       MODAL 1: EDIT CANDIDATE RECORD & PROGRESSION
+       ============================================================ -->
+  <div class="admin-modal" id="editCandidateModal">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3>Edit Candidate Record</h3>
+          <p id="modalCandidateSub">Updating learner progression, process flow &amp; installment payments</p>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+      </div>
+
+      <!-- Navigation Tabs Inside Edit Modal -->
+      <div class="modal-subtabs-nav">
+        <button type="button" class="modal-subtab-btn active" data-subtab="edit-pane-intake" onclick="switchEditSubtab('edit-pane-intake')">
+          👤 1. Candidate Details
+        </button>
+        <button type="button" class="modal-subtab-btn" data-subtab="edit-pane-flow" onclick="switchEditSubtab('edit-pane-flow')">
+          🧭 2. Process Flow &amp; Milestones
+        </button>
+        <button type="button" class="modal-subtab-btn" data-subtab="edit-pane-payment" onclick="switchEditSubtab('edit-pane-payment')">
+          💳 3. Installments &amp; Payments
+        </button>
+      </div>
+      
+      <form id="editCandidateForm" class="modal-form">
+        <input type="hidden" id="modalCandidateId">
+
+        <!-- =========================================================
+             EDIT SUBTAB 1: CANDIDATE INTAKE & PROFILE
+             ========================================================= -->
+        <div id="edit-pane-intake" class="modal-subtab-pane active">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Case Tracking Number</label>
+              <input type="text" id="modalCandidateTracking" class="admin-input" style="font-family: monospace; font-weight: 700; color: var(--admin-emerald);" readonly>
+            </div>
+            <div class="form-group">
+              <label>Registered Email</label>
+              <input type="text" id="modalCandidateEmail" class="admin-input" readonly style="color: var(--admin-text-muted);">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Legal Name <span class="req">*</span></label>
+              <input type="text" id="modalCandidateName" class="admin-input" required>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" id="modalCandidateDob" class="admin-input">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone / WhatsApp Number</label>
+              <input type="text" id="modalCandidatePhone" class="admin-input" placeholder="07700 900543">
+            </div>
+            <div class="form-group">
+              <label>Account Status</label>
+              <select id="modalCandidateStatus" class="admin-select w-full">
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="completed">Completed / Passed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Pickup / Residential Address</label>
+            <input type="text" id="modalCandidateAddress" class="admin-input" placeholder="Full Address &amp; Postcode">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Provisional Licence (Last 4 or Full)</label>
+              <input type="text" id="modalCandidateLicence" class="admin-input" maxlength="18">
+            </div>
+            <div class="form-group">
+              <label>Vehicle Transmission</label>
+              <select id="modalCandidateTransmission" class="admin-select w-full">
+                <option value="automatic">⚡ Automatic (2-Pedal Hybrid)</option>
+                <option value="manual">🕹️ Manual (Clutch &amp; Stick)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Driving Experience</label>
+              <select id="modalCandidatePractical" class="admin-select w-full">
+                <option value="beginner">🔰 Complete Beginner</option>
+                <option value="retest">🔄 Retest / Refresher Lessons</option>
+                <option value="intermediate">🚗 Some Experience</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Enrolled Course Package <span style="font-size: 0.72rem; color: var(--admin-emerald);">(Select or Type Custom)</span></label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="modalCandidatePackage" list="coursePackagesList" class="admin-input" placeholder="e.g. 10-Hour Starter Block (£350)">
+                <select class="admin-select" style="max-width: 130px;" onchange="if(this.value){ document.getElementById('modalCandidatePackage').value = this.value; syncEditPackageFee(this.value); this.value=''; }">
+                  <option value="">Presets ▾</option>
+                  <option value="10-Hour Starter Block (£350)">10-Hr (£350)</option>
+                  <option value="20-Hour Confidence Block (£680)">20-Hr (£680)</option>
+                  <option value="Fast-Track Intensive Course (£1,050)">Intensive (£1,050)</option>
+                  <option value="Pay-As-You-Go 2hr Lesson (£75)">2-Hr PayG (£75)</option>
+                  <option value="DVSA Mock Test & Assessment (£80)">Mock Test (£80)</option>
+                  <option value="Pass Plus & Motorway (£240)">Pass Plus (£240)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Assigned Test Centre <span style="font-size: 0.72rem; color: var(--admin-emerald);">(Select or Type Custom)</span></label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="modalCandidateTestCentre" list="testCentresList" class="admin-input" placeholder="e.g. Birmingham (South Yardley) or Mill Hill">
+                <select class="admin-select" style="max-width: 150px;" onchange="if(this.value){ document.getElementById('modalCandidateTestCentre').value = this.value; this.value=''; }">
+                  <option value="">Centres ▾</option>
+                  <optgroup label="📍 Birmingham Test Centres">
+                    <option value="Birmingham (South Yardley)">Birmingham (South Yardley)</option>
+                    <option value="Birmingham (Kings Heath)">Birmingham (Kings Heath)</option>
+                    <option value="Birmingham (Garretts Green)">Birmingham (Garretts Green)</option>
+                    <option value="Birmingham (Kingstanding)">Birmingham (Kingstanding)</option>
+                    <option value="Birmingham (Sutton Coldfield)">Birmingham (Sutton Coldfield)</option>
+                    <option value="Birmingham (Shirley)">Birmingham (Shirley)</option>
+                    <option value="Birmingham Central">Birmingham Central</option>
+                  </optgroup>
+                  <optgroup label="📍 London & Other Centres">
+                    <option value="Mill Hill">Mill Hill</option>
+                    <option value="Barnet">Barnet</option>
+                    <option value="Hendon">Hendon</option>
+                    <option value="Borehamwood">Borehamwood</option>
+                    <option value="Pinner">Pinner</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                <span style="font-size: 0.70rem; color: var(--admin-text-muted); align-self: center;">Birmingham:</span>
+                <button type="button" class="btn-action-sm" onclick="document.getElementById('modalCandidateTestCentre').value = 'Birmingham (South Yardley)'" style="font-size: 0.70rem; padding: 2px 7px;">South Yardley</button>
+                <button type="button" class="btn-action-sm" onclick="document.getElementById('modalCandidateTestCentre').value = 'Birmingham (Kings Heath)'" style="font-size: 0.70rem; padding: 2px 7px;">Kings Heath</button>
+                <button type="button" class="btn-action-sm" onclick="document.getElementById('modalCandidateTestCentre').value = 'Birmingham (Garretts Green)'" style="font-size: 0.70rem; padding: 2px 7px;">Garretts Green</button>
+                <button type="button" class="btn-action-sm" onclick="document.getElementById('modalCandidateTestCentre').value = 'Birmingham (Kingstanding)'" style="font-size: 0.70rem; padding: 2px 7px;">Kingstanding</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Target Practical Test Date</label>
+              <input type="text" id="modalCandidateTargetDate" class="admin-input" placeholder="e.g. 24 November 2026">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Examiner Notes &amp; Guidance (Visible to Learner)</label>
+            <textarea id="modalCandidateNotes" class="admin-textarea" rows="2" placeholder="Add specific guidance or test route notes..."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+            <button type="button" class="btn-action-sm" onclick="switchEditSubtab('edit-pane-flow')" style="background: var(--admin-blue); color: #ffffff; padding: 8px 20px; font-weight: 700;">
+              Next: Process Flow &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             EDIT SUBTAB 2: PROCESS FLOW & MILESTONES
+             ========================================================= -->
+        <div id="edit-pane-flow" class="modal-subtab-pane">
+          <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;">
+            <strong style="color: #60a5fa; font-size: 0.88rem;">🧭 Workflow Stage Customizer:</strong>
+            <p style="color: var(--admin-text-sub); font-size: 0.8rem; margin: 4px 0 8px;">
+              Re-order, enable/disable, or mark individual milestones as passed for this student.
+            </p>
+            <div class="flow-preset-bar">
+              <button type="button" class="btn-preset-flow" onclick="applyEditFlowPreset('standard')">Standard Flow</button>
+              <button type="button" class="btn-preset-flow" onclick="applyEditFlowPreset('theory_passed')">✓ Theory Already Passed</button>
+              <button type="button" class="btn-preset-flow" onclick="applyEditFlowPreset('retest')">🚗 Practical Only</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Current Active Step in Learner Portal</label>
+              <select id="modalCandidateStep" class="admin-select w-full">
+                <option value="1">Step 1: Application &amp; Verification</option>
+                <option value="2">Step 2: Theory Test Prep</option>
+                <option value="3">Step 3: Practical Tuition &amp; Test Coaching</option>
+                <option value="4">Step 4: DVSA Pass &amp; Confirmation Mail</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Overall Progress (%)</label>
+              <input type="number" id="modalCandidateProgress" class="admin-input" min="0" max="100" step="5">
+            </div>
+          </div>
+
+          <div class="form-group" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 10px 14px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; color: #ffffff; margin: 0;">
+              <input type="checkbox" id="modalCandidateTheoryPassed" onchange="onEditTheoryPassedToggle(this.checked)" style="width: 18px; height: 18px; accent-color: #10b981;">
+              <span>Theory Test Passed &amp; Verified ✓</span>
+            </label>
+          </div>
+
+          <!-- Dynamic Edit Flow Steps Container -->
+          <div id="editFlowStepsContainer">
+            <!-- Populated via renderEditFlowSteps() in admin.js -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+            <button type="button" class="btn-action-sm" onclick="switchEditSubtab('edit-pane-intake')">&larr; Back to Details</button>
+            <button type="button" class="btn-action-sm" onclick="switchEditSubtab('edit-pane-payment')" style="background: var(--admin-blue); color: #ffffff; padding: 8px 20px; font-weight: 700;">
+              Next: Installments &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             EDIT SUBTAB 3: INSTALLMENT PAYMENTS MANAGEMENT
+             ========================================================= -->
+        <div id="edit-pane-payment" class="modal-subtab-pane">
+          <div class="installment-selector-strip">
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--admin-emerald); font-weight: 700; letter-spacing: 0.05em;">PAYMENT ARRANGEMENT</span>
+              <h4 style="color: #ffffff; margin: 4px 0;">Candidate Installment Plan</h4>
+              <small style="color: var(--admin-text-sub);">Update installment amounts, mark as Paid/Pending, or change installments</small>
+            </div>
+            <div class="installment-pills-group" id="editInstPillSelector">
+              <button type="button" class="inst-pill-btn" data-count="1" onclick="setEditInstallmentCount(1)">1 Full</button>
+              <button type="button" class="inst-pill-btn" data-count="2" onclick="setEditInstallmentCount(2)">2 Parts</button>
+              <button type="button" class="inst-pill-btn" data-count="3" onclick="setEditInstallmentCount(3)">3 Parts</button>
+              <button type="button" class="inst-pill-btn" data-count="4" onclick="setEditInstallmentCount(4)">4 Parts</button>
+              <button type="button" class="inst-pill-btn" data-count="5" onclick="setEditInstallmentCount(5)">5 Parts</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Total Agreed Course Fee (£)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="editTotalFee" class="admin-input" min="0" oninput="recalculateEditInstallments()">
+                <button type="button" class="btn-action-sm" onclick="recalculateEditInstallments()" style="white-space: nowrap; background: rgba(16, 185, 129, 0.15); border-color: var(--admin-emerald); color: var(--admin-emerald);">
+                  ⚡ Split Evenly
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Payment Notes</label>
+              <input type="text" id="editPaymentNotes" class="admin-input" placeholder="e.g. Paid part 1 in cash">
+            </div>
+          </div>
+
+          <!-- Dynamic Installment Edit Rows -->
+          <div id="editInstallmentsList">
+            <!-- Dynamically populated via renderEditInstallments() in admin.js -->
+          </div>
+
+          <div class="payment-summary-strip">
+            <div>
+              <span>TOTAL:</span> <strong id="editSumTotalDisplay">£0.00</strong>
+            </div>
+            <div>
+              <span>PAID SO FAR:</span> <strong id="editSumPaidDisplay" style="color: #38bdf8;">£0.00</strong>
+            </div>
+            <div>
+              <span>REMAINING:</span> <strong id="editSumRemainingDisplay" style="color: #fbbf24;">£0.00</strong>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="margin-top: 20px;">
+            <button type="button" class="btn-admin-cancel" id="btnCancelModal">Cancel</button>
+            <button type="submit" class="btn-admin-save" id="btnSaveCandidate" style="padding: 12px 28px; font-weight: 800;">
+              Save Candidate &amp; Update Plan
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 2: REGISTER NEW CANDIDATE (Intake, Process Flow & Installments)
+       ============================================================ -->
+  <div class="admin-modal" id="createCandidateModal">
+    <div class="modal-backdrop" onclick="closeCreateCandidateModal()"></div>
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div>
+          <h3>Register New Candidate</h3>
+          <p>Collect intake details, configure custom process flow, and set up installment payment plan</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeCreateCandidateModal()">&times;</button>
+      </div>
+
+      <!-- Navigation Tabs Inside Modal -->
+      <div class="modal-subtabs-nav">
+        <button type="button" class="modal-subtab-btn active" data-subtab="create-pane-intake" onclick="switchCreateSubtab('create-pane-intake')">
+          👤 1. Candidate Intake Details
+        </button>
+        <button type="button" class="modal-subtab-btn" data-subtab="create-pane-flow" onclick="switchCreateSubtab('create-pane-flow')">
+          🧭 2. Process Flow &amp; Milestones
+        </button>
+        <button type="button" class="modal-subtab-btn" data-subtab="create-pane-payment" onclick="switchCreateSubtab('create-pane-payment')">
+          💳 3. Installment Payment Plan
+        </button>
+      </div>
+      
+      <form id="createCandidateForm" class="modal-form">
+
+        <!-- =========================================================
+             SUBTAB PANE 1: CANDIDATE INTAKE DETAILS
+             ========================================================= -->
+        <div id="create-pane-intake" class="modal-subtab-pane active">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Legal Name <span class="req">*</span></label>
+              <input type="text" id="createCandName" class="admin-input" placeholder="e.g. Liam Smith" required>
+            </div>
+            <div class="form-group">
+              <label>Email Address <span class="req">*</span></label>
+              <input type="email" id="createCandEmail" class="admin-input" placeholder="liam@example.co.uk" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Case Tracking Number</label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="createCandTracking" class="admin-input" placeholder="e.g. SAM-UK-849201" style="font-family: monospace; font-weight: 700; color: var(--admin-emerald);">
+                <button type="button" class="btn-action-sm" onclick="generateTrackingNumber()" title="Generate Random Tracking Number" style="white-space: nowrap; background: rgba(16, 185, 129, 0.15); border-color: var(--admin-emerald); color: var(--admin-emerald);">🎲 Auto</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Initial Login Password <span class="req">*</span></label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="createCandPassword" class="admin-input" placeholder="LearnerPass#2026" value="LearnerPass#2026" required style="font-family: monospace;">
+                <button type="button" class="btn-action-sm" onclick="generateCandidatePassword()" title="Generate Secure Password" style="white-space: nowrap; background: rgba(59, 130, 246, 0.15); border-color: var(--admin-blue); color: #60a5fa;">⚡ Auto</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone / WhatsApp Number <span class="req">*</span></label>
+              <input type="text" id="createCandPhone" class="admin-input" placeholder="07700 900543" required>
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" id="createCandDob" class="admin-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Pickup / Residential Address &amp; Postcode <span class="req">*</span></label>
+            <input type="text" id="createCandAddress" class="admin-input" placeholder="e.g. 12 Watford Way, London NW4" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>UK Provisional Licence (Last 4 or Full Code)</label>
+              <input type="text" id="createCandLicence" class="admin-input" placeholder="8492" maxlength="18">
+            </div>
+            <div class="form-group">
+              <label>Transmission Preference <span class="req">*</span></label>
+              <select id="createCandTransmission" class="admin-select w-full">
+                <option value="automatic">⚡ Automatic (2-Pedal Modern Hybrid)</option>
+                <option value="manual">🕹️ Manual (Clutch &amp; Gear Stick)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Driving Experience / History</label>
+              <select id="createCandExperience" class="admin-select w-full">
+                <option value="beginner">🔰 Complete Beginner (Never Driven)</option>
+                <option value="retest">🔄 Previous Test Attempt / Needs Refresher</option>
+                <option value="intermediate">🚗 Has Driven Before / Part-Trained</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Course Package Enrolled <span style="font-size: 0.72rem; color: var(--admin-emerald);">(Select or Type Custom)</span></label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="createCandPackage" list="coursePackagesList" class="admin-input" placeholder="e.g. 10-Hour Starter Block (£350)" value="10-Hour Starter Block (£350)" oninput="syncPackageFeeFromInput(this.value)">
+                <select class="admin-select" style="max-width: 130px;" onchange="selectCoursePackagePreset(this.value)">
+                  <option value="">Presets ▾</option>
+                  <option value="10-Hour Starter Block (£350)">10-Hr (£350)</option>
+                  <option value="20-Hour Confidence Block (£680)">20-Hr (£680)</option>
+                  <option value="Fast-Track Intensive Course (£1,050)">Intensive (£1,050)</option>
+                  <option value="Pay-As-You-Go 2hr Lesson (£75)">2-Hr PayG (£75)</option>
+                  <option value="DVSA Mock Test & Assessment (£80)">Mock Test (£80)</option>
+                  <option value="Pass Plus & Motorway (£240)">Pass Plus (£240)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Assigned DVSA Test Centre <span style="font-size: 0.72rem; color: var(--admin-emerald);">(Select or Type Custom)</span></label>
+              <div style="display: flex; gap: 6px;">
+                <input type="text" id="createCandTestCentre" list="testCentresList" class="admin-input" placeholder="e.g. Birmingham (South Yardley) or Mill Hill">
+                <select class="admin-select" style="max-width: 150px;" onchange="if(this.value){ document.getElementById('createCandTestCentre').value = this.value; this.value=''; }">
+                  <option value="">Centres ▾</option>
+                  <optgroup label="📍 Birmingham Test Centres">
+                    <option value="Birmingham (South Yardley)">Birmingham (South Yardley)</option>
+                    <option value="Birmingham (Kings Heath)">Birmingham (Kings Heath)</option>
+                    <option value="Birmingham (Garretts Green)">Birmingham (Garretts Green)</option>
+                    <option value="Birmingham (Kingstanding)">Birmingham (Kingstanding)</option>
+                    <option value="Birmingham (Sutton Coldfield)">Birmingham (Sutton Coldfield)</option>
+                    <option value="Birmingham (Shirley)">Birmingham (Shirley)</option>
+                    <option value="Birmingham Central">Birmingham Central</option>
+                  </optgroup>
+                  <optgroup label="📍 London & Other Centres">
+                    <option value="Mill Hill">Mill Hill</option>
+                    <option value="Barnet">Barnet</option>
+                    <option value="Hendon">Hendon</option>
+                    <option value="Borehamwood">Borehamwood</option>
+                    <option value="Pinner">Pinner</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap;">
+                <span style="font-size: 0.70rem; color: var(--admin-text-muted); align-self: center;">Birmingham:</span>
+                <button type="button" class="btn-action-sm" onclick="setCreateTestCentre('Birmingham (South Yardley)')" style="font-size: 0.70rem; padding: 2px 7px;">South Yardley</button>
+                <button type="button" class="btn-action-sm" onclick="setCreateTestCentre('Birmingham (Kings Heath)')" style="font-size: 0.70rem; padding: 2px 7px;">Kings Heath</button>
+                <button type="button" class="btn-action-sm" onclick="setCreateTestCentre('Birmingham (Garretts Green)')" style="font-size: 0.70rem; padding: 2px 7px;">Garretts Green</button>
+                <button type="button" class="btn-action-sm" onclick="setCreateTestCentre('Birmingham (Kingstanding)')" style="font-size: 0.70rem; padding: 2px 7px;">Kingstanding</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Target Practical Test Date (Optional)</label>
+              <input type="text" id="createCandTargetDate" class="admin-input" placeholder="e.g. 24 November 2026 or Pending">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+            <button type="button" class="btn-action-sm" onclick="switchCreateSubtab('create-pane-flow')" style="background: var(--admin-blue); color: #ffffff; padding: 10px 22px; font-weight: 700;">
+              Next: Configure Process Flow &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             SUBTAB PANE 2: PROCESS FLOW & MILESTONES
+             ========================================================= -->
+        <div id="create-pane-flow" class="modal-subtab-pane">
+          
+          <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px;">
+            <strong style="color: #60a5fa; font-size: 0.9rem;">🧭 Candidate Workflow Customizer:</strong>
+            <p style="color: var(--admin-text-sub); font-size: 0.82rem; margin: 4px 0 10px;">
+              Choose which stages are active, set which stage comes first, or mark stages as exempt/passed. The learner's portal will dynamically adapt to this exact sequence.
+            </p>
+            <div class="flow-preset-bar">
+              <button type="button" class="btn-preset-flow" onclick="applyFlowPreset('standard')">⚡ Standard (App &rarr; Theory &rarr; Practical &rarr; Pass)</button>
+              <button type="button" class="btn-preset-flow" onclick="applyFlowPreset('theory_passed')">✓ Theory Already Passed (Start at Practical)</button>
+              <button type="button" class="btn-preset-flow" onclick="applyFlowPreset('retest')">🚗 Retest / Practical Only (Fast-Track)</button>
+            </div>
+          </div>
+
+          <!-- Theory Test Status Quick Bar -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <strong style="color: #10b981; font-size: 0.88rem;">Theory Test Qualification Status:</strong>
+              <small style="display: block; color: var(--admin-text-sub); font-size: 0.78rem;">If checked, Theory will show as passed and candidate goes straight to Practical Coaching</small>
+            </div>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; color: #ffffff;">
+              <input type="checkbox" id="createFlowTheoryPassed" onchange="onTheoryPassedToggle(this.checked)" style="width: 18px; height: 18px; accent-color: #10b981;">
+              <span>Passed Theory Test ✓</span>
+            </label>
+          </div>
+
+          <!-- Starting Step Selector -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Current Active Step in Candidate Portal</label>
+              <select id="createCandStartingStep" class="admin-select w-full" onchange="highlightCurrentFlowStep(this.value)">
+                <option value="1">Step 1: Application &amp; Verification</option>
+                <option value="2">Step 2: Theory Test Preparation</option>
+                <option value="3" selected>Step 3: Practical Tuition &amp; Test Coaching</option>
+                <option value="4">Step 4: DVSA Pass &amp; Confirmation Mail</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Overall Starting Progress %</label>
+              <input type="number" id="createCandProgressPercent" class="admin-input" min="0" max="100" value="50">
+            </div>
+          </div>
+
+          <!-- Step Config Cards Container -->
+          <div id="flowStepsEditorContainer">
+            <!-- Populated via initFlowEditor() in admin.js -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+            <button type="button" class="btn-action-sm" onclick="switchCreateSubtab('create-pane-intake')">&larr; Back to Intake</button>
+            <button type="button" class="btn-action-sm" onclick="switchCreateSubtab('create-pane-payment')" style="background: var(--admin-blue); color: #ffffff; padding: 10px 22px; font-weight: 700;">
+              Next: Set Payment Plan &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================================================
+             SUBTAB PANE 3: INSTALLMENT PAYMENT PLAN
+             ========================================================= -->
+        <div id="create-pane-payment" class="modal-subtab-pane">
+          
+          <div class="installment-selector-strip">
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--admin-emerald); font-weight: 700; letter-spacing: 0.05em;">FLEXIBLE TUITION ARRANGEMENT</span>
+              <h4 style="color: #ffffff; margin: 4px 0;">Number of Installments</h4>
+              <small style="color: var(--admin-text-sub);">Configure the payment stages (default is 3 installments)</small>
+            </div>
+            <div class="installment-pills-group" id="instPillSelector">
+              <button type="button" class="inst-pill-btn" data-count="1" onclick="setInstallmentCount(1)">1 Full</button>
+              <button type="button" class="inst-pill-btn" data-count="2" onclick="setInstallmentCount(2)">2 Parts</button>
+              <button type="button" class="inst-pill-btn active" data-count="3" onclick="setInstallmentCount(3)">3 Parts (Default)</button>
+              <button type="button" class="inst-pill-btn" data-count="4" onclick="setInstallmentCount(4)">4 Parts</button>
+              <button type="button" class="inst-pill-btn" data-count="5" onclick="setInstallmentCount(5)">5 Parts</button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Total Tuition Fee (£)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="createTotalFee" class="admin-input" value="350" min="0" oninput="recalculateInstallmentsFromTotal()">
+                <button type="button" class="btn-action-sm" onclick="recalculateInstallmentsFromTotal()" style="white-space: nowrap; background: rgba(16, 185, 129, 0.15); border-color: var(--admin-emerald); color: var(--admin-emerald);">
+                  ⚡ Split Evenly
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Payment Plan Reference / Notes</label>
+              <input type="text" id="createPaymentNotes" class="admin-input" placeholder="e.g. 3-stage installment arrangement">
+            </div>
+          </div>
+
+          <!-- Dynamic Installment Cards -->
+          <div id="createInstallmentsList">
+            <!-- Dynamically populated via renderInstallmentInputs() in admin.js -->
+          </div>
+
+          <!-- Live Payment Balance Calculation Strip -->
+          <div class="payment-summary-strip">
+            <div>
+              <span>TOTAL FEE:</span> <strong id="sumTotalDisplay">£350.00</strong>
+            </div>
+            <div>
+              <span>INITIAL PAID:</span> <strong id="sumPaidDisplay" style="color: #38bdf8;">£0.00</strong>
+            </div>
+            <div>
+              <span>REMAINING BALANCE:</span> <strong id="sumRemainingDisplay" style="color: #fbbf24;">£350.00</strong>
+            </div>
+          </div>
+
+          <!-- Automatic Email Dispatch Option -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px 14px; margin-top: 15px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.88rem; color: #ffffff; font-weight: 600;">
+              <input type="checkbox" id="createCandSendEmail" checked style="width: 16px; height: 16px; accent-color: #10b981;">
+              <span>✉️ Dispatch Welcome Email with Credentials, Case Tracking Number, Process Flow &amp; Payment Plan</span>
+            </label>
+            <small style="display: block; color: var(--admin-text-muted); font-size: 0.75rem; margin-top: 4px; margin-left: 26px;">
+              Candidate will automatically receive an email containing their login email, password, official tracking number, and their 3-installment breakdown.
+            </small>
+          </div>
+
+          <div class="modal-footer" style="margin-top: 20px;">
+            <button type="button" class="btn-admin-cancel" onclick="switchCreateSubtab('create-pane-flow')">&larr; Back to Process</button>
+            <button type="submit" class="btn-admin-save" id="btnSubmitCreateCandidate" style="padding: 12px 28px; font-weight: 800;">
+              Register Candidate &amp; Dispatch Plan
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 3: RESET CANDIDATE PASSWORD
+       ============================================================ -->
+  <div class="admin-modal" id="resetPasswordModal">
+    <div class="modal-backdrop" onclick="closeResetPasswordModal()"></div>
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div>
+          <h3>Reset Learner Password</h3>
+          <p id="resetPassModalSub">Set a new password for candidate</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeResetPasswordModal()">&times;</button>
+      </div>
+      
+      <form id="resetPasswordForm" class="modal-form">
+        <input type="hidden" id="resetPassCandidateId">
+        <div class="form-group">
+          <label>New Password <span class="req">*</span></label>
+          <input type="text" id="resetPassNewPassword" class="admin-input" placeholder="Enter new password (min 4 chars)" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-admin-cancel" onclick="closeResetPasswordModal()">Cancel</button>
+          <button type="submit" class="btn-admin-save" id="btnSubmitResetPass">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 4: CREATE / EDIT BOOKING
+       ============================================================ -->
+  <div class="admin-modal" id="bookingModal">
+    <div class="modal-backdrop" onclick="closeBookingModal()"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="bookingModalTitle">Lesson Booking</h3>
+          <p id="bookingModalSub">Manage lesson details &amp; schedule</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeBookingModal()">&times;</button>
+      </div>
+      
+      <form id="bookingForm" class="modal-form">
+        <input type="hidden" id="bookingModalId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Candidate Name <span class="req">*</span></label>
+            <input type="text" id="bookingFormName" class="admin-input" required>
+          </div>
+          <div class="form-group">
+            <label>Candidate Email <span class="req">*</span></label>
+            <input type="email" id="bookingFormEmail" class="admin-input" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Candidate Phone</label>
+            <input type="text" id="bookingFormPhone" class="admin-input">
+          </div>
+          <div class="form-group">
+            <label>Pickup Postcode</label>
+            <input type="text" id="bookingFormPostcode" class="admin-input" placeholder="e.g. NW4">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Course Package</label>
+            <input type="text" id="bookingFormCourse" class="admin-input" placeholder="10-Hour Starter Block">
+          </div>
+          <div class="form-group">
+            <label>Transmission</label>
+            <select id="bookingFormTransmission" class="admin-select w-full">
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lesson Price (£)</label>
+            <input type="number" id="bookingFormPrice" class="admin-input" min="0" step="5">
+          </div>
+          <div class="form-group">
+            <label>Booking Status</label>
+            <select id="bookingFormStatus" class="admin-select w-full">
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Assigned Examiner / Instructor</label>
+          <input type="text" id="bookingFormExaminer" class="admin-input" placeholder="Mr Sam (Chief Instructor)">
+        </div>
+
+        <div class="form-group">
+          <label>Lesson Notes / Schedule Remarks</label>
+          <textarea id="bookingFormNotes" class="admin-textarea" rows="2"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-admin-cancel" onclick="closeBookingModal()">Cancel</button>
+          <button type="submit" class="btn-admin-save" id="btnSubmitBooking">Save Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 5: CREATE / EDIT COURSE
+       ============================================================ -->
+  <div class="admin-modal" id="courseModal">
+    <div class="modal-backdrop" onclick="closeCourseModal()"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="courseModalTitle">Course Package</h3>
+          <p id="courseModalSub">Configure tuition offering &amp; pricing</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeCourseModal()">&times;</button>
+      </div>
+      
+      <form id="courseForm" class="modal-form">
+        <input type="hidden" id="courseModalId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Course Title <span class="req">*</span></label>
+            <input type="text" id="courseFormTitle" class="admin-input" required>
+          </div>
+          <div class="form-group">
+            <label>Slug Identifier</label>
+            <input type="text" id="courseFormSlug" class="admin-input" placeholder="e.g. block-10">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Price (£) <span class="req">*</span></label>
+            <input type="number" id="courseFormPrice" class="admin-input" required min="0">
+          </div>
+          <div class="form-group">
+            <label>Duration / Units</label>
+            <input type="text" id="courseFormDuration" class="admin-input" placeholder="e.g. 10 Hours (5 x 2hr lessons)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Transmission</label>
+            <select id="courseFormTransmission" class="admin-select w-full">
+              <option value="Both">Both (Manual &amp; Automatic)</option>
+              <option value="Manual">Manual Only</option>
+              <option value="Automatic">Automatic Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Highlight Badge</label>
+            <input type="text" id="courseFormBadge" class="admin-input" placeholder="e.g. MOST POPULAR">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Course Description</label>
+          <textarea id="courseFormDescription" class="admin-textarea" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Features &amp; Curriculum (One bullet point per line)</label>
+          <textarea id="courseFormFeatures" class="admin-textarea" rows="4" placeholder="Dual-control tuition&#10;DVSA mock test routes&#10;Free pick-up and drop-off"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-admin-cancel" onclick="closeCourseModal()">Cancel</button>
+          <button type="submit" class="btn-admin-save" id="btnSubmitCourse">Save Course</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL 6: CREATE / EDIT REVIEW
+       ============================================================ -->
+  <div class="admin-modal" id="reviewModal">
+    <div class="modal-backdrop" onclick="closeReviewModal()"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="reviewModalTitle">Student Review</h3>
+          <p id="reviewModalSub">Manage verified testimonials</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeReviewModal()">&times;</button>
+      </div>
+      
+      <form id="reviewForm" class="modal-form">
+        <input type="hidden" id="reviewModalId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Student Name <span class="req">*</span></label>
+            <input type="text" id="reviewFormName" class="admin-input" required>
+          </div>
+          <div class="form-group">
+            <label>Rating (1 to 5)</label>
+            <select id="reviewFormRating" class="admin-select w-full">
+              <option value="5">★★★★★ (5 Stars)</option>
+              <option value="4">★★★★☆ (4 Stars)</option>
+              <option value="3">★★★☆☆ (3 Stars)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pass Type</label>
+            <input type="text" id="reviewFormPassType" class="admin-input" placeholder="e.g. 1st Time Pass, 0 Faults">
+          </div>
+          <div class="form-group">
+            <label>Test Centre</label>
+            <input type="text" id="reviewFormTestCentre" class="admin-input" placeholder="e.g. Mill Hill, Barnet, Hendon">
+          </div>
+        </div>
+
+        <!-- Reviewer Profile Picture (Optional) -->
+        <div class="form-group" style="background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 12px 14px;">
+          <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span>Reviewer Profile Picture <span style="font-size: 0.72rem; color: var(--admin-emerald); font-weight: normal;">(Optional - photo or initials)</span></span>
+            <button type="button" id="btnClearReviewAvatar" onclick="clearReviewAvatar()" style="display: none; background: none; border: none; color: #ef4444; font-size: 0.75rem; cursor: pointer; text-decoration: underline;">Remove Photo &times;</button>
+          </label>
+          <div style="display: flex; gap: 14px; align-items: center;">
+            <div id="reviewAvatarPreviewWrap" style="width: 52px; height: 52px; border-radius: 50%; background: #1e293b; border: 2px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              <img id="reviewAvatarPreviewImg" src="" alt="Reviewer" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+              <span id="reviewAvatarPlaceholder" style="font-size: 1.3rem; color: #94a3b8;">👤</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+              <input type="text" id="reviewFormAvatar" class="admin-input" placeholder="Paste Image URL or browse from computer" oninput="onReviewAvatarUrlChange(this.value)">
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <label class="btn-action-sm" style="cursor: pointer; background: rgba(59, 130, 246, 0.15); border-color: var(--admin-blue); color: #60a5fa; font-size: 0.75rem; padding: 4px 10px; display: inline-flex; align-items: center; gap: 4px;">
+                  📷 Upload Photo...
+                  <input type="file" id="reviewFormAvatarFile" accept="image/*" style="display: none;" onchange="handleReviewAvatarFile(this)">
+                </label>
+                <small style="font-size: 0.73rem; color: var(--admin-text-muted);">Optional: leave empty if student prefers initials avatar</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Review Comment <span class="req">*</span></label>
+          <textarea id="reviewFormComment" class="admin-textarea" rows="3" required></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-admin-cancel" onclick="closeReviewModal()">Cancel</button>
+          <button type="submit" class="btn-admin-save" id="btnSubmitReview">Save Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Datalists for Course Packages & DVSA Test Centres -->
+  <datalist id="coursePackagesList">
+    <option value="10-Hour Starter Block (£350)">
+    <option value="20-Hour Confidence Block (£680)">
+    <option value="Fast-Track Intensive Course (£1,050)">
+    <option value="Pay-As-You-Go 2hr Lesson (£75)">
+    <option value="DVSA Mock Test & Assessment (£80)">
+    <option value="Pass Plus & Motorway (£240)">
+    <option value="15-Hour Intermediate Refresher (£510)">
+    <option value="30-Hour Complete Zero-to-Hero (£990)">
+  </datalist>
+
+  <datalist id="testCentresList">
+    <!-- Birmingham Centres -->
+    <option value="Birmingham (South Yardley)">
+    <option value="Birmingham (Kings Heath)">
+    <option value="Birmingham (Garretts Green)">
+    <option value="Birmingham (Kingstanding)">
+    <option value="Birmingham (Sutton Coldfield)">
+    <option value="Birmingham (Shirley)">
+    <option value="Birmingham Central">
+    <!-- London & Greater UK Centres -->
+    <option value="Mill Hill">
+    <option value="Barnet">
+    <option value="Hendon">
+    <option value="Borehamwood">
+    <option value="Pinner">
+    <option value="Goodmayes">
+    <option value="Barking">
+    <option value="Isleworth">
+    <option value="Hayes">
+    <option value="Slough">
+    <option value="Leicester">
+    <option value="Coventry">
+  </datalist>
+
+  <!-- Toast Notification Container -->
+  <div id="adminToastContainer" class="admin-toast-container"></div>
+
+  <!-- Environment & API Configuration -->
+  <script src="js/config.js"></script>
+  <!-- Admin Controller Script -->
+  <script src="js/admin.js"></script>
+</body>
+</html>

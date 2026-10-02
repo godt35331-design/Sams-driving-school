@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rev-1",
+    "name": "Sarah Jenkins",
+    "location": "North London",
+    "rating": 5,
+    "result": "Passed 1st Time (2 minors)",
+    "date": "September 2026",
+    "transmission": "Manual",
+    "comment": "Mr Sam is an incredible instructor! I had severe driving anxiety after failing with another school. His calm demeanor, clear step-by-step techniques, and patience helped me pass first time with only two minors. Could not recommend him enough!",
+    "avatar": "SJ"
+  },
+  {
+    "id": "rev-2",
+    "name": "Tariq Al-Mansoor",
+    "location": "Mill Hill",
+    "rating": 5,
+    "result": "Passed 1st Time (Zero minors!)",
+    "date": "August 2026",
+    "transmission": "Automatic",
+    "comment": "Passed with a clean sheet zero faults! Mr Sam's mock tests felt harder than the actual test, so when test day came I was completely relaxed. Outstanding tuition and punctuality every single week.",
+    "avatar": "TM"
+  },
+  {
+    "id": "rev-3",
+    "name": "Chloe Davies",
+    "location": "Barnet",
+    "rating": 5,
+    "result": "Passed 1st Time",
+    "date": "July 2026",
+    "transmission": "Automatic",
+    "comment": "Did the 2-week intensive course with Mr Sam. His dual-control hybrid car was a pleasure to drive and his guidance on tricky roundabouts made everything click for me. Five stars all the way!",
+    "avatar": "CD"
+  },
+  {
+    "id": "rev-4",
+    "name": "Marcus O'Connor",
+    "location": "Hendon",
+    "rating": 5,
+    "result": "Passed with 3 minors",
+    "date": "June 2026",
+    "transmission": "Manual",
+    "comment": "Mr Sam is worth every penny. He focuses on creating safe, lifelong drivers rather than just passing the test. His reference points for parallel parking are foolproof!",
+    "avatar": "MO"
+  }
+]
