@@ -101,7 +101,7 @@ function getCandidateConfirmationTemplate(candidate) {
       </div>
 
       <center>
-        <a href="https://wa.me/447700900543?text=Hello%20Examiner,%20my%20name%20is%20${encodeURIComponent(name)}.%20I%20have%20submitted%20my%20registration%20and%20would%20like%20to%20confirm%20my%20schedule." class="btn-action" target="_blank">
+        <a href="https://wa.me/${process.env.WHATSAPP_NUMBER || '447473958802'}?text=Hello%20Examiner,%20my%20name%20is%20${encodeURIComponent(name)}.%20I%20have%20submitted%20my%20registration%20and%20would%20like%20to%20confirm%20my%20schedule." class="btn-action" target="_blank">
           Message Examiner on WhatsApp
         </a>
       </center>
@@ -262,7 +262,7 @@ function getCandidateWelcomeCredentialsTemplate({ candidate, rawPassword, tracki
       </div>
 
       <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
-        Need assistance or want to confirm test availability directly? Message Examiner Sam directly via WhatsApp at <a href="https://wa.me/${process.env.WHATSAPP_NUMBER || '447700900543'}" style="color: #059669; font-weight: 600;">${process.env.PHONE_NUMBER || '+44 7700 900543'}</a> or email <a href="mailto:${process.env.EMAIL || 'contact@samsondrivingschool.com'}" style="color: #059669; font-weight: 600;">${process.env.EMAIL || 'contact@samsondrivingschool.com'}</a>.
+        Need assistance or want to confirm test availability directly? Message Examiner Sam directly via WhatsApp at <a href="https://wa.me/${process.env.WHATSAPP_NUMBER || '447473958802'}" style="color: #059669; font-weight: 600;">${process.env.PHONE_NUMBER || '+44 7473 958802'}</a> or email <a href="mailto:${process.env.EMAIL || 'contact@samsondrivingschool.com'}" style="color: #059669; font-weight: 600;">${process.env.EMAIL || 'contact@samsondrivingschool.com'}</a>.
       </p>
     </div>
     <div class="email-footer">

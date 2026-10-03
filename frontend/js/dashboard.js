@@ -406,7 +406,7 @@ function initContactExaminerLinks() {
   const waText = encodeURIComponent(
     `Hello Examiner, my name is ${name} (Case: ${track}, DOB: ${dob}, Tel: ${phone}, Address: ${address}, Licence: ****-${licence}).\nVehicle: ${trans}\nTheory Status: ${theory}.\nI would like to confirm my candidate details and schedule my driving lessons and test appointment.`
   );
-  const waUrl = `https://wa.me/447700900543?text=${waText}`;
+  const waUrl = `https://wa.me/447473958802?text=${waText}`;
 
   const mailSubject = encodeURIComponent(`Candidate Test Booking & Info - ${name} (${track})`);
   const mailBody = encodeURIComponent(
@@ -471,7 +471,7 @@ function renderCandidateProfileBox() {
 
   const phoneEl = document.getElementById('infoCandidatePhone');
   if (phoneEl) {
-    const phone = currentUser.phone || '07700 900543';
+    const phone = currentUser.phone || '07473 958802';
     phoneEl.innerHTML = `<a href="tel:${phone.replace(/\s+/g, '')}" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">📞 ${escapeHtml(phone)}</a>`;
   }
 

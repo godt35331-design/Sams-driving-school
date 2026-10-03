@@ -30,8 +30,8 @@ This project is configured for **split cloud hosting**:
    | `JWT_EXPIRES_IN` | `7d` |
    | `FRONTEND_URL` | Your Vercel frontend URL (e.g. `https://your-project.vercel.app`) |
    | `INSTRUCTOR_NAME` | `Sam` |
-   | `PHONE_NUMBER` | `+44 7700 900543` |
-   | `WHATSAPP_NUMBER`| `447700900543` |
+   | `PHONE_NUMBER` | `+44 7473 958802` |
+   | `WHATSAPP_NUMBER`| `447473958802` |
    | `EMAIL` | `contact@samsdrivingschool.co.uk` |
 6. Click **Create Web Service**.
 7. Once deployed, copy your Render URL (e.g., `https://sams-driving-school-api.onrender.com`).

@@ -23,8 +23,8 @@ services:
       - key: INSTRUCTOR_NAME
         value: "Sam"
       - key: PHONE_NUMBER
-        value: "+44 7700 900543"
+        value: "+44 7473 958802"
       - key: WHATSAPP_NUMBER
-        value: "447700900543"
+        value: "447473958802"
       - key: EMAIL
         value: "contact@samsdrivingschool.co.uk"
