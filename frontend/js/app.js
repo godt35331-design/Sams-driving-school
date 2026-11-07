@@ -1,4 +1,4 @@
-/**
+﻿/**
  * mr sam_ Driving School - Client Logic & Interactions
  * Features: Roll-down menus, hero carousel, mobile drawer, interactive search, backend booking
  */
@@ -316,57 +316,259 @@ async function loadReviews() {
   }).join('');
 }
 
-// 8. Booking Form Submission
+// 8. Guided 3-step Appointment Booking Form (emailed to Sam via /api/appointments)
 function initBookingForm() {
-  const form = document.getElementById('mainBookingForm');
-  const submitBtn = document.getElementById('submitBookingBtn');
+  const form = document.getElementById('appointmentForm');
   if (!form) return;
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  const steps = form.querySelectorAll('.booking-step');
+  const stepperItems = document.querySelectorAll('.stepper-item');
+  const pathItems = document.querySelectorAll('.booking-path-item');
+  const successPanel = document.getElementById('bookingSuccess');
+  const statusEl = document.getElementById('bookingStatus');
+  const submitBtn = document.getElementById('bookingSubmitBtn');
+  const dateInput = document.getElementById('bkDate');
+  const card = form.closest('.booking-card');
 
-    const payload = {
-      fullName: document.getElementById('fullName').value,
-      phone: document.getElementById('phone').value,
-      email: document.getElementById('email').value,
-      postcode: document.getElementById('postcode').value,
-      transmission: document.getElementById('transmission').value,
-      courseId: document.getElementById('courseId').value,
-      notes: document.getElementById('notes').value
-    };
+  let currentStep = 1;
+  let maxReached = 1;
 
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Processing enquiry...</span>';
+  // No dates in the past
+  if (dateInput) {
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+    dateInput.min = today.toISOString().slice(0, 10);
+  }
+
+  const val = (name) => {
+    const el = form.elements[name];
+    if (!el) return '';
+    return (el.value || '').trim();
+  };
+
+  const serviceLabel = () => {
+    const checked = form.querySelector('input[name="service"]:checked');
+    return checked ? checked.closest('.service-option').querySelector('strong').textContent : '';
+  };
+
+  function setError(name, message) {
+    const errEl = form.querySelector(`[data-error-for="${name}"]`);
+    if (errEl) errEl.textContent = message || '';
+    const input = form.elements[name];
+    if (input && input.classList) input.classList.toggle('invalid', Boolean(message));
+  }
+
+  function validateStep(step) {
+    let ok = true;
+    const fail = (name, msg) => { setError(name, msg); ok = false; };
+
+    if (step === 1) {
+      setError('service'); setError('preferredDate');
+      if (!form.querySelector('input[name="service"]:checked')) fail('service', 'Please choose what you would like to book.');
+      const d = val('preferredDate');
+      if (d && dateInput && d < dateInput.min) fail('preferredDate', 'Please choose a date from today onwards.');
     }
 
+    if (step === 2) {
+      ['fullName', 'email', 'phone', 'address', 'postcode'].forEach(n => setError(n));
+      if (val('fullName').length < 2) fail('fullName', 'Please enter your full name.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val('email'))) fail('email', 'Please enter a valid email address.');
+      if (val('phone').replace(/\D/g, '').length < 10) fail('phone', 'Please enter a valid phone number.');
+      if (val('address').length < 3) fail('address', 'Please enter your address.');
+      if (!/^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i.test(val('postcode'))) fail('postcode', 'Please enter a valid UK postcode, e.g. B15 2TT.');
+    }
+
+    if (step === 3) {
+      const errEl = form.querySelector('[data-error-for="consent"]');
+      const consent = document.getElementById('bkConsent');
+      if (errEl) errEl.textContent = '';
+      if (!consent.checked) {
+        if (errEl) errEl.textContent = 'Please tick the box so Sam can contact you.';
+        ok = false;
+      }
+    }
+
+    if (!ok) {
+      const firstBad = form.querySelector(`.booking-step[data-step="${step}"] .invalid`);
+      if (firstBad) firstBad.focus();
+    }
+    return ok;
+  }
+
+  function renderReview() {
+    const row = (k, v) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`;
+    const dateText = val('preferredDate')
+      ? new Date(val('preferredDate') + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
+      : 'Flexible';
+    const transmission = (form.querySelector('input[name="transmission"]:checked') || {}).value || 'Not sure yet';
+
+    document.getElementById('reviewAppointment').innerHTML =
+      row('Service', serviceLabel()) +
+      row('Transmission', transmission) +
+      row('Date', dateText) +
+      row('Time', val('preferredTime') || 'Flexible');
+
+    document.getElementById('reviewDetails').innerHTML =
+      row('Name', val('fullName')) +
+      row('Email', val('email')) +
+      row('Phone', val('phone')) +
+      row('Address', [val('address'), val('town'), val('postcode').toUpperCase()].filter(Boolean).join(', '));
+  }
+
+  function goTo(step, { scroll = true } = {}) {
+    currentStep = step;
+    maxReached = Math.max(maxReached, step);
+    if (step === 3) renderReview();
+
+    steps.forEach(s => s.classList.toggle('active', Number(s.dataset.step) === step));
+
+    stepperItems.forEach(item => {
+      const n = Number(item.dataset.gotoStep);
+      item.classList.toggle('active', n === step);
+      item.classList.toggle('done', n < step);
+      item.disabled = n > maxReached;
+    });
+
+    pathItems.forEach(item => {
+      const n = Number(item.dataset.pathStep);
+      item.classList.toggle('active', n === step);
+      item.classList.toggle('done', n < step);
+    });
+
+    if (statusEl) statusEl.textContent = '';
+    if (scroll && card) {
+      const top = card.getBoundingClientRect().top + window.scrollY - 100;
+      if (Math.abs(window.scrollY - top) > 120) window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  // Next / Back buttons
+  form.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (validateStep(currentStep)) goTo(currentStep + 1);
+    });
+  });
+  form.querySelectorAll('[data-back]').forEach(btn => {
+    btn.addEventListener('click', () => goTo(currentStep - 1));
+  });
+
+  // Stepper + "Edit" links: jump back freely, jump forward only through validation
+  document.querySelectorAll('#booking [data-goto-step]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = Number(btn.dataset.gotoStep);
+      if (target === currentStep) return;
+      if (target < currentStep) return goTo(target);
+      for (let s = currentStep; s < target; s++) {
+        if (!validateStep(s)) return goTo(s, { scroll: false });
+      }
+      goTo(target);
+    });
+  });
+
+  // Clear an error as soon as the visitor fixes the field
+  form.addEventListener('input', (e) => {
+    if (e.target.name) setError(e.target.name);
+  });
+  form.addEventListener('change', (e) => {
+    if (e.target.name === 'service') setError('service');
+    if (e.target.id === 'bkConsent') {
+      const errEl = form.querySelector('[data-error-for="consent"]');
+      if (errEl) errEl.textContent = '';
+    }
+  });
+
+  // "Book This" buttons anywhere on the page pre-select the service
+  document.querySelectorAll('[data-book-service]').forEach(link => {
+    link.addEventListener('click', () => {
+      const radio = form.querySelector(`input[name="service"][value="${link.dataset.bookService}"]`);
+      if (radio) {
+        radio.checked = true;
+        setError('service');
+      }
+      if (!successPanel.hidden) resetForm();
+      goTo(1, { scroll: false });
+    });
+  });
+
+  function resetForm() {
+    form.reset();
+    form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+    form.querySelectorAll('.field-error').forEach(el => { el.textContent = ''; });
+    successPanel.hidden = true;
+    form.hidden = false;
+    document.querySelector('.booking-stepper').hidden = false;
+    maxReached = 1;
+  }
+
+  document.getElementById('bookAnotherBtn').addEventListener('click', () => {
+    resetForm();
+    goTo(1);
+  });
+
+  // Submit
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (currentStep !== 3) {
+      if (validateStep(currentStep)) goTo(currentStep + 1);
+      return;
+    }
+    for (let s = 1; s <= 3; s++) {
+      if (!validateStep(s)) return goTo(s, { scroll: false });
+    }
+
+    const payload = {
+      service: (form.querySelector('input[name="service"]:checked') || {}).value,
+      transmission: (form.querySelector('input[name="transmission"]:checked') || {}).value,
+      preferredDate: val('preferredDate'),
+      preferredTime: val('preferredTime'),
+      fullName: val('fullName'),
+      email: val('email'),
+      phone: val('phone'),
+      address: val('address'),
+      town: val('town'),
+      postcode: val('postcode'),
+      message: val('message'),
+      website: val('website')
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Sending…';
+    statusEl.textContent = '';
+
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('/api/appointments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success) {
-        showToast('Enquiry Received', 'Sam will contact you via WhatsApp or call within 24 hours to confirm your lesson slot.');
-        form.reset();
+        document.getElementById('successName').textContent = payload.fullName.split(' ')[0];
+        document.getElementById('successService').textContent = serviceLabel();
+        document.getElementById('successRef').textContent = data.reference || '';
+        document.getElementById('successEmail').textContent = payload.email;
+        document.getElementById('successEmailNote').hidden = !data.confirmationSent;
+        form.hidden = true;
+        document.querySelector('.booking-stepper').hidden = true;
+        successPanel.hidden = false;
+        pathItems.forEach(item => {
+          const n = Number(item.dataset.pathStep);
+          item.classList.toggle('done', n < 4);
+          item.classList.toggle('active', n === 4);
+        });
+        if (data.simulated) console.warn('[Booking] Gmail is not configured yet — the booking was logged in the server console instead of emailed.');
       } else {
-        showToast('Enquiry Sent', data.message || 'Thank you for reaching out!');
+        statusEl.textContent = data.message || 'Something went wrong. Please try again, or call / WhatsApp 07473 958802.';
       }
     } catch (err) {
-      showToast('Enquiry Logged', 'Thank you! Sam will be in touch shortly.');
+      statusEl.textContent = 'We could not reach the server. Please check your connection, or call / WhatsApp 07473 958802.';
     } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `
-          <span>SUBMIT LESSON ENQUIRY</span>
-          <span class="btn-arrow">&rarr;</span>
-        `;
-      }
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Send booking request <span>&rarr;</span>';
     }
   });
-}
 
+  goTo(1, { scroll: false });
+}
 

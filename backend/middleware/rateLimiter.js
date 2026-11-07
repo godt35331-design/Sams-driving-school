@@ -59,6 +59,13 @@ module.exports = {
     message: 'Too many login attempts from this IP address. Please wait 15 minutes before trying again.'
   }),
 
+  // Public booking form: Max 8 submissions per hour per IP (anti-spam)
+  appointmentLimiter: createRateLimiter({
+    windowMs: 60 * 60 * 1000,
+    max: 8,
+    message: 'You have sent several booking requests already. Please call or WhatsApp us on 07473 958802.'
+  }),
+
   // General API rate limiter: Max 500 requests per 15 minutes per IP
   apiLimiter: createRateLimiter({
     windowMs: 15 * 60 * 1000,

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const { protect, requireAdmin, optionalAuth, sanitizeInput } = require('../middleware/auth');
-const { authLimiter } = require('../middleware/rateLimiter');
+const { authLimiter, appointmentLimiter } = require('../middleware/rateLimiter');
+const appointmentController = require('../controllers/appointmentController');
 const authController = require('../controllers/authController');
 const candidateController = require('../controllers/candidateController');
 const bookingController = require('../controllers/bookingController');
@@ -38,6 +39,9 @@ router.get('/reviews', reviewController.getReviews);
 // ==========================================
 router.post('/bookings', optionalAuth, bookingController.createBooking);
 router.get('/bookings/my', protect, bookingController.getMyBookings);
+
+// Public appointment booking form (emailed to the owner via Gmail)
+router.post('/appointments', appointmentLimiter, appointmentController.createAppointment);
 
 // ==========================================
 // 5. Protected Admin Routes (JWT + requireAdmin)
